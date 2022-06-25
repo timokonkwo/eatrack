@@ -31,7 +31,7 @@ const ItemCtrl = (function() {
     // Data Structure / State
     const data = {
         items: [
-            // { id: 0, name: "Egusi soup", calories: 1150 },
+            { id: 0, name: "Egusi soup", calories: 1150 },
             // { id: 1, name: "Egg source", calories: 300 },
             // { id: 2, name: "Beans & Plantain", calories: 700 }
         ],
