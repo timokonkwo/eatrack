@@ -31,9 +31,9 @@ const ItemCtrl = (function() {
     // Data Structure / State
     const data = {
         items: [
-            { id: 0, name: "Egusi soup", calories: 1150 },
-            { id: 1, name: "Egg source", calories: 300 },
-            { id: 2, name: "Beans & Plantain", calories: 700 }
+            // { id: 0, name: "Egusi soup", calories: 1150 },
+            // { id: 1, name: "Egg source", calories: 300 },
+            // { id: 2, name: "Beans & Plantain", calories: 700 }
         ],
         currentItem: null,
         totalCalories: 0,
@@ -80,6 +80,7 @@ const ItemCtrl = (function() {
             return data.totalCalories;
         },
 
+        /* Get the item by it's id */
         getItemById: id => {
             /* Initialize found */
             let found = null;
@@ -92,6 +93,26 @@ const ItemCtrl = (function() {
             })
 
             /* return the found item with id */
+            return found;
+        },
+
+        /* Update the item */
+        updateItem: (name, calories) => {
+            /* convert the calories to number */
+            calories = parseInt(calories);
+
+            /* initialize the found item */
+            let found = null;
+
+            /* loop through items to find the item to update */
+            data.items.forEach(item => {
+                if (item.id === data.currentItem.id) {
+                    item.name = name;
+                    item.calories = calories;
+                    found = item;
+                }
+            });
+
             return found;
         },
 
@@ -112,6 +133,7 @@ const UICtrl = (function() {
     /* UI Selectors */
     const UISelectors = {
         itemList: '#item-list',
+        listItems: '#item-list li',
         itemNameInput: '#item-name',
         itemCaloriesInput: '#item-calories',
         addBtn: '.add-btn',
@@ -170,6 +192,29 @@ const UICtrl = (function() {
             `;
             /* Insert the li into the ul */
             document.querySelector(UISelectors.itemList).insertAdjacentElement('beforeend', li)
+        },
+
+        /* Update the item in the UI */
+        updateListItem: item => {
+            /* Get all list items (returns a node list)*/
+            let listItems = document.querySelectorAll(UISelectors.listItems);
+
+            /* Turn node list into array and loop through to get the actual item */
+            Array.from(listItems).forEach(listItem => {
+                /* Get current item's id */
+                let foundID = listItem.id;
+
+                /* Check if it matches with the updated item id */
+                if (foundID === `item-${item.id}`) {
+                    /* Update it's content */
+                    document.querySelector(`#${foundID}`).innerHTML = `
+                    <strong>${item.name} : </strong> <em>${item.calories} Calories</em>
+                    <a href="#" class="secondary-content">
+                        <i class="edit-item fa fa-pencil"></i>
+                    </a>
+                    `;
+                }
+            })
         },
 
         /* Clear the input field after submit */
@@ -233,11 +278,22 @@ const App = (function(ItemCtrl, UICtrl) {
         /* Event item - Add button */
         document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
 
+        /* Disable submit by enter */
+        document.addEventListener('keypress', e => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                return false;
+            }
+        })
+
         /* Event item - edit button */
         document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
+
+        /* Event item - update button */
+        document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
     }
 
-    /* Add item submit */
+    /* Adding and submitting item */
     const itemAddSubmit = e => {
 
         /* Get User Input from UI CTRL */
@@ -285,7 +341,38 @@ const App = (function(ItemCtrl, UICtrl) {
 
             /* show the edit state */
             UICtrl.showEditState();
+
+            /* Prevent form's default behaviour */
+            e.preventDefault();
         }
+    }
+
+    /* Funtion to handle updating an item */
+    const itemUpdateSubmit = function(e) {
+
+        /* Get the new input (edited item) */
+        const input = UICtrl.getItemInput();
+
+        /* Update item */
+        const updatedItem = ItemCtrl.updateItem(input.name, input.calories);
+
+        /* Update the item in the UI */
+        UICtrl.updateListItem(updatedItem);
+
+        /* Get new total calories */
+        const totalCalories = ItemCtrl.getTotalCalories();
+
+        /* Add total calories to UI */
+        UICtrl.showTotalCalories(totalCalories);
+
+        /* Clear the edit state */
+        UICtrl.clearEditState();
+
+        /* Clear the input fields */
+        UICtrl.clearInput();
+
+        /* Prevent form's default behaviour */
+        e.preventDefault();
     }
 
 
