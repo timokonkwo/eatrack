@@ -307,6 +307,8 @@ const App = (function(ItemCtrl, UICtrl) {
         /* Event item - delete button */
 
         /* Event item - back button */
+        document.querySelector(UISelectors.backBtn).addEventListener('click', backBtnClick);
+
     }
 
     /* function to clear all items */
@@ -319,6 +321,16 @@ const App = (function(ItemCtrl, UICtrl) {
 
         /* Prevent browser's defalut */
         e.preventDefault();
+
+        /* Get new total calories */
+        const totalCalories = ItemCtrl.getTotalCalories();
+
+        /* Add total calories to UI */
+        UICtrl.showTotalCalories(totalCalories);
+
+        /* Clear the edit state */
+        UICtrl.clearEditState();
+
     }
 
     /* Adding and submitting item */
@@ -401,6 +413,20 @@ const App = (function(ItemCtrl, UICtrl) {
 
         /* Prevent form's default behaviour */
         e.preventDefault();
+    }
+
+    /* Function for back button */
+    const backBtnClick = e => {
+
+        /* Clear the input fields */
+        UICtrl.clearInput();
+
+        /* Clear the edit state */
+        UICtrl.clearEditState();
+
+        /* Prevent browser's defalut */
+        e.preventDefault();
+
     }
 
 
