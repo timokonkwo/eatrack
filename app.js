@@ -284,7 +284,7 @@ const App = (function(ItemCtrl, UICtrl) {
         })
 
         /* Event item - clear all button */
-        document.querySelector('click', )
+        document.querySelector('click', clearAllClick);
 
         /* Event item - edit button */
         document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
@@ -295,6 +295,15 @@ const App = (function(ItemCtrl, UICtrl) {
         /* Event item - delete button */
 
         /* Event item - back button */
+    }
+
+    /* function to clear all items */
+    const clearAllClick = () => {
+        /* clear all items from data structure */
+        ItemCtrl.clearAll();
+
+        /* Clear all items from UI */
+        UICtrl.clearList();
     }
 
     /* Adding and submitting item */
