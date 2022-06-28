@@ -115,6 +115,10 @@ const ItemCtrl = (function() {
             return found;
         },
 
+        deleteItem: id => data.items.splice(id, 1),
+
+        getCurrentItem: () => data.currentItem,
+
         /* set current item in the data structure */
         setCurrentItem: item => data.currentItem = item
     };
@@ -226,6 +230,8 @@ const UICtrl = (function() {
             })
         },
 
+        deleteListItem: (id) => document.querySelector(`#item-${id}`).remove(),
+
         /* Clear the input field after submit */
         clearInput: () => {
             document.querySelector(UISelectors.itemNameInput).value = '';
@@ -305,6 +311,7 @@ const App = (function(ItemCtrl, UICtrl) {
         document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
 
         /* Event item - delete button */
+        document.querySelector(UISelectors.deleteBtn).addEventListener('click', deleteItemClick);
 
         /* Event item - back button */
         document.querySelector(UISelectors.backBtn).addEventListener('click', backBtnClick);
@@ -327,6 +334,9 @@ const App = (function(ItemCtrl, UICtrl) {
 
         /* Add total calories to UI */
         UICtrl.showTotalCalories(totalCalories);
+
+        /* Hide the list to remove ul line */
+        UICtrl.hideList();
 
         /* Clear the edit state */
         UICtrl.clearEditState();
@@ -410,6 +420,34 @@ const App = (function(ItemCtrl, UICtrl) {
 
         /* Clear the input fields */
         UICtrl.clearInput();
+
+        /* Prevent form's default behaviour */
+        e.preventDefault();
+    }
+
+    /* Function to delete an item */
+    const deleteItemClick = (e) => {
+
+        /* Get the current item's id to delete */
+        const itemID = ItemCtrl.getCurrentItem().id;
+
+        /* Delete item from data structure */
+        ItemCtrl.deleteItem(itemID);
+
+        /* Delete item from UI */
+        UICtrl.deleteListItem(itemID)
+
+        /* Get new total calories */
+        const totalCalories = ItemCtrl.getTotalCalories();
+
+        /* Add total calories to UI */
+        UICtrl.showTotalCalories(totalCalories);
+
+        /* Clear the input fields */
+        UICtrl.clearInput();
+
+        /* Clear the edit state */
+        UICtrl.clearEditState();
 
         /* Prevent form's default behaviour */
         e.preventDefault();
