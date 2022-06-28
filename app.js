@@ -92,6 +92,9 @@ const ItemCtrl = (function() {
             return found;
         },
 
+        /* Clear all items */
+        clearAll: () => data.items = [],
+
         /* Update the item */
         updateItem: (name, calories) => {
             /* convert the calories to number */
@@ -171,6 +174,15 @@ const UICtrl = (function() {
             }
         },
 
+        /* Remove all items from UI */
+        clearList: () => {
+            /* Get all list items */
+            const listItems = document.querySelectorAll(UISelectors.listItems);
+            /* remove all */
+            Array.from(listItems).forEach(item => item.remove());
+        },
+
+        /* Function to add items to UI */
         addListItem: item => {
             /* Show the ul list */
             document.querySelector(UISelectors.itemList).style.display = 'block';
@@ -284,7 +296,7 @@ const App = (function(ItemCtrl, UICtrl) {
         })
 
         /* Event item - clear all button */
-        document.querySelector('click', clearAllClick);
+        document.querySelector(UISelectors.clearAllBtn).addEventListener('click', clearAllClick);
 
         /* Event item - edit button */
         document.querySelector(UISelectors.itemList).addEventListener('click', itemEditClick);
@@ -298,12 +310,15 @@ const App = (function(ItemCtrl, UICtrl) {
     }
 
     /* function to clear all items */
-    const clearAllClick = () => {
+    const clearAllClick = e => {
         /* clear all items from data structure */
         ItemCtrl.clearAll();
 
         /* Clear all items from UI */
         UICtrl.clearList();
+
+        /* Prevent browser's defalut */
+        e.preventDefault();
     }
 
     /* Adding and submitting item */
