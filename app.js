@@ -1,6 +1,6 @@
 /**
  * This project uses the JavaScript module design pattern
- * Module patter makes use of IIFEs
+ * Module pattern makes use of IIFEs
  * functions in an IIFE function are private and cannot be accessed outside
  * Only returned methods/functions are public and accessible
  */
@@ -10,14 +10,23 @@
  *  ====== STORAGE CONTROLLER ======
  * Handles everything related to Local Storage for this App */
 
+const StorageCtrl = (function() {
 
+    return {
+        setStorage: items => localStorage.setItem('data', JSON.stringify(items)),
+
+        getStoredItems: () => JSON.parse(localStorage.getItem('data'))
+    }
+
+
+})();
 
 
 /**
  * ====== ITEM CONTROLLER ====== *
  * Handles everything related to the items and it's methods for this App 
  * Item constructor
- * todo item methods, etc
+ * item methods, etc
  */
 
 const ItemCtrl = (function() {
@@ -37,13 +46,14 @@ const ItemCtrl = (function() {
 
     /* Public Methods */
     return {
+        setItems: items => items == null ? data.items = [] : data.items = items,
         getItems: () => data.items,
         logData: () => data,
         addItem: (name, calories) => {
             /* Create ID for the item */
             let ID;
-
-            if (data.items.length > 0) {
+            console.log(data)
+            if (data.items.length) {
                 ID = data.items[data.items.length - 1].id + 1;
             } else {
                 ID = 0;
@@ -152,11 +162,10 @@ const UICtrl = (function() {
     /* Public Methods */
     return {
         populateItemList: items => {
-            /*Create li items and send to the DOM*/
+            /* Create li items and send to the DOM */
             let html = '';
 
             /* Loop throught the items and add to the html */
-
             items.forEach(item => {
                 html += `<li class="collection-item" id="item-${item.id}">
                 <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
@@ -282,7 +291,7 @@ const UICtrl = (function() {
  * Combines every other controller together.
  */
 
-const App = (function(ItemCtrl, UICtrl) {
+const App = (function(StorageCtrl, ItemCtrl, UICtrl) {
 
     /* Load Event Listeners */
     const loadEventListeners = function() {
@@ -323,6 +332,9 @@ const App = (function(ItemCtrl, UICtrl) {
         /* clear all items from data structure */
         ItemCtrl.clearAll();
 
+        /* clear from localStorage */
+
+
         /* Clear all items from UI */
         UICtrl.clearList();
 
@@ -353,6 +365,9 @@ const App = (function(ItemCtrl, UICtrl) {
         if (input.name !== '' && input.calories !== '') {
             /* pass input values to Item CTRL (to create the item) and store the result */
             const newItem = ItemCtrl.addItem(input.name, input.calories);
+
+            /* Save to local storage */
+            StorageCtrl.setStorage(ItemCtrl.getItems());
 
             /* Add item to UI list */
             UICtrl.addListItem(newItem);
@@ -406,6 +421,9 @@ const App = (function(ItemCtrl, UICtrl) {
         /* Update item */
         const updatedItem = ItemCtrl.updateItem(input.name, input.calories);
 
+        /* Save to local storage */
+        StorageCtrl.setStorage(ItemCtrl.getItems());
+
         /* Update the item in the UI */
         UICtrl.updateListItem(updatedItem);
 
@@ -433,6 +451,9 @@ const App = (function(ItemCtrl, UICtrl) {
 
         /* Delete item from data structure */
         ItemCtrl.deleteItem(itemID);
+
+        /* Save new local storage */
+        StorageCtrl.setStorage(ItemCtrl.getItems());
 
         /* Delete item from UI */
         UICtrl.deleteListItem(itemID)
@@ -476,22 +497,34 @@ const App = (function(ItemCtrl, UICtrl) {
             UICtrl.clearEditState()
 
             /* Fetch items from the Item Ctrl's Data structure */
-            const items = ItemCtrl.getItems();
+            // const items = ItemCtrl.getItems();
+
+            /* Fetch items from the Item LocalStorage */
+            let items = StorageCtrl.getStoredItems();
+
+            /* Set items to data structure */
+            ItemCtrl.setItems(items)
 
             /* Check if there are any item */
-            if (items.length === 0) {
+            if (items == null) {
                 /* Hide the list to remove ul line */
                 UICtrl.hideList();
             } else {
                 /* Populate the list of calories in the UI */
                 UICtrl.populateItemList(items);
+
+                /* Get new total calories */
+                const totalCalories = ItemCtrl.getTotalCalories();
+
+                /* Add total calories to UI */
+                UICtrl.showTotalCalories(totalCalories);
             }
 
             /* Load Event Listeners */
             loadEventListeners();
         },
     }
-})(ItemCtrl, UICtrl);
+})(StorageCtrl, ItemCtrl, UICtrl);
 
 /* Initialize the App */
 App.init();
