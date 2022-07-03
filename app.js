@@ -495,7 +495,7 @@ const App = (function(StorageCtrl, ItemCtrl, UICtrl) {
         init: function() {
 
             /* Initially hide the edit state until edit btn is clicked */
-            UICtrl.clearEditState()
+            // UICtrl.clearEditState()
 
             /* Fetch items from the Item Ctrl's Data structure */
             // const items = ItemCtrl.getItems();
