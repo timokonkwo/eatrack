@@ -15,7 +15,9 @@ const StorageCtrl = (function() {
     return {
         setStorage: items => localStorage.setItem('data', JSON.stringify(items)),
 
-        getStoredItems: () => JSON.parse(localStorage.getItem('data'))
+        getStoredItems: () => JSON.parse(localStorage.getItem('data')),
+
+        clearStorage: () => localStorage.clear()
     }
 
 
@@ -52,7 +54,6 @@ const ItemCtrl = (function() {
         addItem: (name, calories) => {
             /* Create ID for the item */
             let ID;
-            console.log(data)
             if (data.items.length) {
                 ID = data.items[data.items.length - 1].id + 1;
             } else {
@@ -333,7 +334,7 @@ const App = (function(StorageCtrl, ItemCtrl, UICtrl) {
         ItemCtrl.clearAll();
 
         /* clear from localStorage */
-
+        StorageCtrl.clearStorage();
 
         /* Clear all items from UI */
         UICtrl.clearList();
