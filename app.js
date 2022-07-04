@@ -351,6 +351,9 @@ const App = (function(StorageCtrl, ItemCtrl, UICtrl) {
         /* Hide the list to remove ul line */
         UICtrl.hideList();
 
+        /* Clear the input fields */
+        UICtrl.clearInput();
+
         /* Clear the edit state */
         UICtrl.clearEditState();
 
